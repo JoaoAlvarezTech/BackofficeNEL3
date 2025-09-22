@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Data - NEL3 Backoffice</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 4px; }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug de Dados Mockados</h1>
+        
+        <button onclick="debugData()">Verificar Dados</button>
+        <button onclick="clearData()">Limpar Dados</button>
+        <button onclick="regenerateData()">Regenerar Dados</button>
+        
+        <div id="results"></div>
+        
+        <script>
+            function debugData() {
+                try {
+                    const data = JSON.parse(localStorage.getItem('hpm_mockdb_v1') || '{}');
+                    
+                    let html = '<div class="section">';
+                    html += '<h2>📊 Resumo dos Dados</h2>';
+                    html += `<p><strong>Partners:</strong> ${data.partners?.length || 0}</p>`;
+                    html += `<p><strong>Affiliates (Usuários):</strong> ${data.affiliates?.length || 0}</p>`;
+                    html += `<p><strong>Invoices (Notas Fiscais):</strong> ${data.invoices?.length || 0}</p>`;
+                    html += '</div>';
+                    
+                    if (data.affiliates && data.affiliates.length > 0) {
+                        html += '<div class="section">';
+                        html += '<h3>👥 Usuários (Affiliates)</h3>';
+                        html += '<pre>' + JSON.stringify(data.affiliates.slice(0, 5), null, 2) + '</pre>';
+                        html += '</div>';
+                    }
+                    
+                    if (data.invoices && data.invoices.length > 0) {
+                        html += '<div class="section">';
+                        html += '<h3>📄 Notas Fiscais (Primeiras 5)</h3>';
+                        html += '<pre>' + JSON.stringify(data.invoices.slice(0, 5), null, 2) + '</pre>';
+                        html += '</div>';
+                        
+                        // Check affiliate linking
+                        html += '<div class="section">';
+                        html += '<h3>🔗 Verificação de Vinculação</h3>';
+                        const invoicesWithAffiliates = data.invoices.filter(inv => inv.affiliateId);
+                        const invoicesWithoutAffiliates = data.invoices.filter(inv => !inv.affiliateId);
+                        html += `<p><strong>Notas com affiliateId:</strong> ${invoicesWithAffiliates.length}</p>`;
+                        html += `<p><strong>Notas sem affiliateId:</strong> ${invoicesWithoutAffiliates.length}</p>`;
+                        
+                        if (invoicesWithAffiliates.length > 0) {
+                            const sampleInvoice = invoicesWithAffiliates[0];
+                            const affiliate = data.affiliates?.find(a => a.id === sampleInvoice.affiliateId);
+                            html += `<p><strong>Exemplo de vinculação:</strong></p>`;
+                            html += `<p>Nota ${sampleInvoice.number} → Usuário: ${affiliate?.name || 'NÃO ENCONTRADO'}</p>`;
+                        }
+                        
+                        if (invoicesWithoutAffiliates.length > 0) {
+                            html += `<div class="error">⚠️ ${invoicesWithoutAffiliates.length} notas fiscais SEM usuário vinculado!</div>`;
+                        }
+                        html += '</div>';
+                    }
+                    
+                    document.getElementById('results').innerHTML = html;
+                    
+                } catch (error) {
+                    document.getElementById('results').innerHTML = 
+                        '<div class="error">❌ Erro ao verificar dados: ' + error.message + '</div>';
+                }
+            }
+            
+            function clearData() {
+                localStorage.clear();
+                sessionStorage.clear();
+                document.getElementById('results').innerHTML = 
+                    '<div class="success">✅ Dados limpos! Recarregue a aplicação principal.</div>';
+            }
+            
+            function regenerateData() {
+                localStorage.clear();
+                sessionStorage.clear();
+                document.getElementById('results').innerHTML = 
+                    '<div class="info">🔄 Dados limpos! Abra a aplicação principal para regenerar.</div>';
+            }
+            
+            // Auto-run on load
+            window.onload = function() {
+                debugData();
+            };
+        </script>
+    </div>
+</body>
+</html>

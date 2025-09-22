@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fix Invoices - NEL3 Backoffice</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+        .warning { color: #ffc107; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        button.danger { background: #dc3545; }
+        button.danger:hover { background: #c82333; }
+        .step { margin: 15px 0; padding: 15px; border-left: 4px solid #007bff; background: #f8f9fa; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Correção de Notas Fiscais</h1>
+        <p class="info">Este script irá forçar a vinculação de todas as notas fiscais a usuários (médicos).</p>
+        
+        <div class="step">
+            <h3>Passo 1: Verificar Estado Atual</h3>
+            <button onclick="checkCurrentState()">Verificar Dados Atuais</button>
+            <div id="current-state"></div>
+        </div>
+        
+        <div class="step">
+            <h3>Passo 2: Forçar Correção</h3>
+            <button onclick="forceFixInvoices()" class="danger">Forçar Correção de Todas as Invoices</button>
+            <div id="fix-result"></div>
+        </div>
+        
+        <div class="step">
+            <h3>Passo 3: Verificar Resultado</h3>
+            <button onclick="verifyFix()">Verificar Se Correção Funcionou</button>
+            <div id="verify-result"></div>
+        </div>
+        
+        <div class="step">
+            <h3>Passo 4: Abrir Aplicação</h3>
+            <button onclick="openApp()">Abrir Aplicação Principal</button>
+            <p class="info">Após a correção, abra a aplicação para ver as notas fiscais com usuários vinculados.</p>
+        </div>
+        
+        <div id="results"></div>
+        
+        <script>
+            function checkCurrentState() {
+                try {
+                    const data = JSON.parse(localStorage.getItem('hpm_mockdb_v1') || '{}');
+                    
+                    let html = '<div class="info">';
+                    html += '<h4>📊 Estado Atual dos Dados:</h4>';
+                    html += `<p><strong>Total de Partners:</strong> ${data.partners?.length || 0}</p>`;
+                    html += `<p><strong>Total de Usuários (Affiliates):</strong> ${data.affiliates?.length || 0}</p>`;
+                    html += `<p><strong>Total de Notas Fiscais:</strong> ${data.invoices?.length || 0}</p>`;
+                    
+                    if (data.invoices && data.invoices.length > 0) {
+                        const invoicesWithUsers = data.invoices.filter(inv => inv.affiliateId);
+                        const invoicesWithoutUsers = data.invoices.filter(inv => !inv.affiliateId);
+                        
+                        html += `<p><strong>Notas COM usuário:</strong> ${invoicesWithUsers.length}</p>`;
+                        html += `<p><strong>Notas SEM usuário:</strong> ${invoicesWithoutUsers.length}</p>`;
+                        
+                        if (invoicesWithoutUsers.length > 0) {
+                            html += '<div class="warning">⚠️ Existem notas fiscais sem usuário vinculado!</div>';
+                        } else {
+                            html += '<div class="success">✅ Todas as notas fiscais têm usuário vinculado!</div>';
+                        }
+                    }
+                    
+                    html += '</div>';
+                    document.getElementById('current-state').innerHTML = html;
+                    
+                } catch (error) {
+                    document.getElementById('current-state').innerHTML = 
+                        '<div class="error">❌ Erro ao verificar dados: ' + error.message + '</div>';
+                }
+            }
+            
+            function forceFixInvoices() {
+                try {
+                    const data = JSON.parse(localStorage.getItem('hpm_mockdb_v1') || '{}');
+                    
+                    if (!data.affiliates || data.affiliates.length === 0) {
+                        document.getElementById('fix-result').innerHTML = 
+                            '<div class="error">❌ Não há usuários disponíveis para vincular!</div>';
+                        return;
+                    }
+                    
+                    if (!data.invoices || data.invoices.length === 0) {
+                        document.getElementById('fix-result').innerHTML = 
+                            '<div class="warning">⚠️ Não há notas fiscais para corrigir!</div>';
+                        return;
+                    }
+                    
+                    let fixedCount = 0;
+                    const totalInvoices = data.invoices.length;
+                    
+                    // Force fix all invoices
+                    data.invoices.forEach((invoice, index) => {
+                        if (!invoice.affiliateId) {
+                            // Use modulo to distribute evenly across affiliates
+                            const affiliateIndex = index % data.affiliates.length;
+                            const selectedAffiliate = data.affiliates[affiliateIndex];
+                            
+                            invoice.affiliateId = selectedAffiliate.id;
+                            
+                            if (selectedAffiliate.associatedPartnerIds && selectedAffiliate.associatedPartnerIds.length > 0) {
+                                invoice.partnerId = selectedAffiliate.associatedPartnerIds[0];
+                            }
+                            
+                            fixedCount++;
+                        }
+                    });
+                    
+                    // Save back to localStorage
+                    localStorage.setItem('hpm_mockdb_v1', JSON.stringify(data));
+                    
+                    document.getElementById('fix-result').innerHTML = 
+                        `<div class="success">✅ Correção aplicada!<br>
+                        <strong>${fixedCount}</strong> notas fiscais foram vinculadas a usuários.<br>
+                        Total de notas: ${totalInvoices}</div>`;
+                        
+                } catch (error) {
+                    document.getElementById('fix-result').innerHTML = 
+                        '<div class="error">❌ Erro ao corrigir dados: ' + error.message + '</div>';
+                }
+            }
+            
+            function verifyFix() {
+                try {
+                    const data = JSON.parse(localStorage.getItem('hpm_mockdb_v1') || '{}');
+                    
+                    if (data.invoices && data.invoices.length > 0) {
+                        const invoicesWithUsers = data.invoices.filter(inv => inv.affiliateId);
+                        const invoicesWithoutUsers = data.invoices.filter(inv => !inv.affiliateId);
+                        
+                        let html = '<div class="info">';
+                        html += '<h4>🔍 Verificação Pós-Correção:</h4>';
+                        html += `<p><strong>Notas COM usuário:</strong> ${invoicesWithUsers.length}</p>`;
+                        html += `<p><strong>Notas SEM usuário:</strong> ${invoicesWithoutUsers.length}</p>`;
+                        
+                        if (invoicesWithoutUsers.length === 0) {
+                            html += '<div class="success">🎉 SUCESSO! Todas as notas fiscais agora têm usuário vinculado!</div>';
+                            
+                            // Show sample
+                            if (invoicesWithUsers.length > 0) {
+                                const sample = invoicesWithUsers[0];
+                                const affiliate = data.affiliates.find(a => a.id === sample.affiliateId);
+                                html += `<p><strong>Exemplo:</strong> Nota ${sample.number} → Usuário: ${affiliate?.name || 'N/A'}</p>`;
+                            }
+                        } else {
+                            html += '<div class="error">❌ Ainda existem notas sem usuário! Tente novamente.</div>';
+                        }
+                        
+                        html += '</div>';
+                        document.getElementById('verify-result').innerHTML = html;
+                    }
+                    
+                } catch (error) {
+                    document.getElementById('verify-result').innerHTML = 
+                        '<div class="error">❌ Erro ao verificar: ' + error.message + '</div>';
+                }
+            }
+            
+            function openApp() {
+                window.open('http://localhost:5173', '_blank');
+            }
+            
+            // Auto-run check on load
+            window.onload = function() {
+                checkCurrentState();
+            };
+        </script>
+    </div>
+</body>
+</html>

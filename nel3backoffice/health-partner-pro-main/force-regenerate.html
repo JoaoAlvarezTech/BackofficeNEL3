@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Force Regenerate - NEL3 Backoffice</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .step { margin: 10px 0; padding: 10px; border-left: 4px solid #007bff; background: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Forçar Regeneração de Dados</h1>
+        <p class="info">Este script irá limpar completamente os dados e forçar uma regeneração completa com nomes de médicos.</p>
+        
+        <div class="step">
+            <h3>Passo 1: Limpar Dados</h3>
+            <button onclick="clearAllData()">Limpar Tudo</button>
+            <div id="clear-status"></div>
+        </div>
+        
+        <div class="step">
+            <h3>Passo 2: Verificar Dados</h3>
+            <button onclick="checkData()">Verificar Dados Atuais</button>
+            <div id="check-status"></div>
+        </div>
+        
+        <div class="step">
+            <h3>Passo 3: Abrir Aplicação</h3>
+            <button onclick="openApp()">Abrir Aplicação Principal</button>
+            <p class="info">Após abrir, os dados serão regenerados automaticamente com nomes de médicos.</p>
+        </div>
+        
+        <div id="results"></div>
+        
+        <script>
+            function clearAllData() {
+                try {
+                    // Clear all storage
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    
+                    // Clear any other possible keys
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key) localStorage.removeItem(key);
+                    }
+                    
+                    document.getElementById('clear-status').innerHTML = 
+                        '<div class="success">✅ Todos os dados foram limpos com sucesso!</div>';
+                        
+                } catch (error) {
+                    document.getElementById('clear-status').innerHTML = 
+                        '<div class="error">❌ Erro ao limpar dados: ' + error.message + '</div>';
+                }
+            }
+            
+            function checkData() {
+                try {
+                    const data = JSON.parse(localStorage.getItem('hpm_mockdb_v1') || '{}');
+                    
+                    let html = '<div class="info">';
+                    html += '<h4>📊 Status dos Dados:</h4>';
+                    html += `<p><strong>Partners:</strong> ${data.partners?.length || 0}</p>`;
+                    html += `<p><strong>Affiliates (Usuários):</strong> ${data.affiliates?.length || 0}</p>`;
+                    html += `<p><strong>Invoices (Notas Fiscais):</strong> ${data.invoices?.length || 0}</p>`;
+                    
+                    if (data.invoices && data.invoices.length > 0) {
+                        const sampleInvoice = data.invoices[0];
+                        const affiliate = data.affiliates?.find(a => a.id === sampleInvoice.affiliateId);
+                        html += `<p><strong>Exemplo de vinculação:</strong> Nota ${sampleInvoice.number} → ${affiliate?.name || 'SEM USUÁRIO'}</p>`;
+                    }
+                    
+                    html += '</div>';
+                    
+                    document.getElementById('check-status').innerHTML = html;
+                    
+                } catch (error) {
+                    document.getElementById('check-status').innerHTML = 
+                        '<div class="error">❌ Erro ao verificar dados: ' + error.message + '</div>';
+                }
+            }
+            
+            function openApp() {
+                window.open('http://localhost:5173', '_blank');
+            }
+            
+            // Auto-clear on load
+            window.onload = function() {
+                clearAllData();
+                setTimeout(checkData, 1000);
+            };
+        </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,207 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Financial Backoffice Design System - Dark Theme Optimized
+All colors MUST be HSL for consistent theming
+*/
+
+@layer base {
+  :root {
+    /* Base colors - Light mode fallback */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Financial primary - Deep blue */
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 221 83% 65%;
+
+    /* Success/Approval - Green */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    --success-glow: 142 76% 50%;
+
+    /* Warning/Pending - Amber */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 3.9%;
+    --warning-glow: 38 92% 65%;
+
+    /* Danger/Alert - Red */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --destructive-glow: 0 84% 75%;
+
+    /* Secondary surfaces */
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 5.9% 10%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    /* Borders and inputs */
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar */
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 221 83% 53%;
+
+    /* Financial gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-success: linear-gradient(135deg, hsl(var(--success)), hsl(var(--success-glow)));
+    --gradient-warning: linear-gradient(135deg, hsl(var(--warning)), hsl(var(--warning-glow)));
+    --gradient-danger: linear-gradient(135deg, hsl(var(--destructive)), hsl(var(--destructive-glow)));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--muted)), hsl(var(--background)));
+
+    /* Shadows with brand colors */
+    --shadow-primary: 0 10px 30px -10px hsl(var(--primary) / 0.3);
+    --shadow-success: 0 10px 30px -10px hsl(var(--success) / 0.3);
+    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.2);
+    --shadow-card: 0 4px 20px -4px hsl(240 10% 3.9% / 0.4);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .dark {
+    /* Keep same values for dark mode (default) */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 5.9% 10%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 221 83% 53%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Custom scrollbar for dark theme */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground;
+  }
+}
+
+@layer components {
+  /* Gradient backgrounds */
+  .bg-gradient-primary {
+    @apply bg-gradient-to-br from-primary to-primary-glow;
+  }
+
+  .bg-gradient-success {
+    @apply bg-gradient-to-br from-success to-success-glow;
+  }
+
+  .bg-gradient-warning {
+    @apply bg-gradient-to-br from-warning to-warning-glow;
+  }
+
+  .bg-gradient-danger {
+    @apply bg-gradient-to-br from-destructive to-destructive-glow;
+  }
+
+  .bg-gradient-subtle {
+    @apply bg-gradient-to-b from-muted to-background;
+  }
+
+  /* KPI Card Variants */
+  .kpi-card {
+    @apply bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  .kpi-card-primary {
+    @apply kpi-card bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20;
+  }
+
+  .kpi-card-success {
+    @apply kpi-card bg-gradient-to-br from-success/10 to-success/5 border-success/20;
+  }
+
+  .kpi-card-warning {
+    @apply kpi-card bg-gradient-to-br from-warning/10 to-warning/5 border-warning/20;
+  }
+
+  .kpi-card-danger {
+    @apply kpi-card bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/20;
+  }
+
+  /* Financial animations */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px hsl(var(--primary) / 0.2); }
+    50% { box-shadow: 0 0 40px hsl(var(--primary) / 0.4); }
+  }
+}
