@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* NEL³ Fintech Theme - Paleta Oficial */
+    --background: 210 100% 11%;  /* #001a35 - Azul-marinho profundo */
+    --foreground: 0 0% 100%;     /* #FFFFFF - Branco */
+
+    --card: 207 95% 12%;            /* #01223d - Azul escuro para cards */
+    --card-foreground: 0 0% 100%;       /* Texto branco nos cards */
+
+    --popover: 210 100% 11%;
+    --popover-foreground: 0 0% 100%;
+
+    /* Primary: Ciano elétrico para destaques */
+    --primary: 195 100% 50%;     /* #00c2ff - Azul claro/Ciano elétrico */
+    --primary-foreground: 210 100% 11%;
+
+    /* Secondary: Azul médio para botões */
+    --secondary: 210 100% 25%;   /* #004080 - Azul médio */
+    --secondary-foreground: 0 0% 100%;
+
+    /* Muted: Superfícies secundárias */
+    --muted: 210 15% 18%;
+    --muted-foreground: 0 0% 70%;
+
+    /* Accent: Ciano para highlights */
+    --accent: 195 100% 50%;      /* #00c2ff */
+    --accent-foreground: 210 100% 11%;
+
+    /* Cores específicas fintech */
+    --fintech-navy: 210 100% 11%;      /* #001a35 */
+    --fintech-cyan: 195 100% 50%;      /* #00c2ff */
+    --fintech-white: 0 0% 100%;        /* #FFFFFF */
+    --fintech-gray: 0 0% 96%;          /* #F4F4F4 */
+    --fintech-blue: 210 100% 25%;      /* #004080 */
+    --fintech-green: 120 60% 50%;      /* Para valores positivos */
+    --fintech-red: 0 72% 51%;          /* Para valores negativos */
+
+    /* Destructive */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* UI Elements */
+    --border: 210 30% 20%;
+    --input: 210 15% 20%;
+    --ring: 195 100% 50%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(210 100% 11%), hsl(210 100% 15%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 96%), hsl(0 0% 94%));
+    --gradient-accent: linear-gradient(135deg, hsl(195 100% 50%), hsl(195 80% 60%));
+    
+    /* Shadows */
+    --shadow-card: 0 8px 32px hsl(210 100% 8% / 0.4);
+    --shadow-button: 0 4px 16px hsl(195 100% 50% / 0.2);
+    --shadow-glow: 0 0 24px hsl(195 100% 50% / 0.15);
+
+    --radius: 0.75rem;
+
+    /* Sidebar variables */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
